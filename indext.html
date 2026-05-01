@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园图书管理系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft YaHei", sans-serif; }
+        .login-container { display: flex; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .login-box { background: #fff; padding: 40px 50px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 400px; }
+        .login-title { text-align: center; font-size: 24px; color: #2c3e50; margin-bottom: 30px; font-weight: 600; }
+        .login-form-item { margin-bottom: 20px; }
+        .login-form-item label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; font-size: 14px; }
+        .login-form-item input, .login-form-item select { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 6px; outline: none; font-size: 14px; }
+        .login-form-item input:focus, .login-form-item select:focus { border-color: #667eea; }
+        .login-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 500; transition: all 0.3s ease; }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(102,126,234,0.4); }
+        .login-tip { text-align: center; margin-top: 20px; font-size: 13px; color: #666; }
+        .login-tip span { color: #667eea; font-weight: 500; }
+        .main-container { display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 220px; background: #2c3e50; color: #fff; padding: 20px 0; flex-shrink: 0; }
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 0 20px 15px; border-bottom: 1px solid #34495e; margin-bottom: 15px; }
+        .sidebar-title { font-size: 18px; font-weight: 600; }
+        .logout-btn { padding: 6px 12px; background: #e74c3c; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; transition: all 0.3s ease; }
+        .logout-btn:hover { background: #c0392b; }
+        .sidebar-menu { list-style: none; }
+        .sidebar-menu li { padding: 12px 20px; cursor: pointer; transition: all 0.3s ease; }
+        .sidebar-menu li:hover, .sidebar-menu li.active { background: #3498db; padding-left: 28px; }
+        .sidebar-menu li.hidden { display: none; }
+        .main-content { flex: 1; background: #f5f7fa; overflow-y: auto; padding: 20px; }
+        .page-title { font-size: 22px; color: #2c3e50; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #3498db; }
+        .card { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 20px; }
+        .card h3 { margin-bottom: 15px; color: #2c3e50; font-size: 16px; }
+        .form-group { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; align-items: flex-end; }
+        .form-item { flex: 1; min-width: 160px; }
+        .form-item label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; font-size: 14px; }
+        .form-item input, .form-item select, .form-item textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; outline: none; font-size: 14px; }
+        .form-item input:focus, .form-item select:focus, .form-item textarea:focus { border-color: #3498db; }
+        .form-item textarea { resize: vertical; min-height: 40px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.3s ease; }
+        .btn-primary { background: #3498db; color: #fff; }
+        .btn-success { background: #2ecc71; color: #fff; }
+        .btn-danger { background: #e74c3c; color: #fff; }
+        .btn-warning { background: #f39c12; color: #fff; }
+        .btn-info { background: #1abc9c; color: #fff; }
+        .btn-secondary { background: #95a5a6; color: #fff; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn:disabled { background: #ccc; cursor: not-allowed; transform: none; opacity: 1; }
+        .table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        .table th, .table td { padding: 10px 5px; text-align: center; border: 1px solid #ddd; }
+        .table th { background: #3498db; color: #fff; font-weight: 500; }
+        .table tr:nth-child(even) { background: #f8f9fa; }
+        .table tr:hover { background: #f0f7ff; }
+        .page { display: none; }
+        .page.active { display: block; }
+        .empty-tip { text-align: center; padding: 40px; color: #7f8c8d; font-size: 14px; }
+        .cate-badge { padding: 4px 8px; border-radius: 4px; color: #fff; font-size: 12px; background: #3498db; }
+        .state-badge { padding: 4px 8px; border-radius: 4px; color: #fff; font-size: 12px; }
+        .state-in { background: #2ecc71; }
+        .state-out { background: #f39c12; }
+        .state-lost { background: #e74c3c; }
+        .state-nature { background: #95a5a6; }
+        .state-human { background: #c0392b; }
+        .state-overdue { background: #e74c3c; }
+        .state-paid { background: #2ecc71; }
+        .state-abnormal { background: #e74c3c; }
+        .tip-text { font-size: 13px; color: #666; margin-top: 8px; }
+        .danger-text { color: #e74c3c; }
+        .success-text { color: #2ecc71; }
+        .rule-card { background: #e8f4fd; border: 1px solid #3498db; border-radius: 6px; padding: 12px 15px; margin-bottom: 15px; font-size: 13px; color: #2c3e50; }
+        .search-wrapper { position: relative; }
+        .search-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ddd; border-radius: 0 0 4px 4px; max-height: 200px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .search-dropdown-item { padding: 10px 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+        .search-dropdown-item:hover { background: #f0f7ff; }
+        .search-dropdown-item .book-name { font-weight: 500; color: #2c3e50; }
+        .search-dropdown-item .book-code { font-size: 12px; color: #7f8c8d; }
+    </style>
+</head>
+<body>
+<div id="loginPage" class="login-container">
+    <div class="login-box">
+        <div class="login-title">📚 校园图书管理系统</div>
+        <div class="login-form-item">
+            <label>身份选择</label>
+            <select id="loginRole">
+                <option value="admin">超级管理员</option>
+                <option value="teacher">教师</option>
+                <option value="student">学生</option>
+            </select>
+        </div>
+        <div class="login-form-item">
+            <label>账号（管理员/学号/工号）</label>
+            <input type="text" id="loginUsername" placeholder="请输入账号">
+        </div>
+        <div class="login-form-item">
+            <label>密码（管理员/身份证后6位）</label>
+            <input type="password" id="loginPassword" placeholder="请输入密码">
+        </div>
+        <button class="login-btn" onclick="doLogin()">登录</button>
+        <div class="login-tip">
+            超级管理员账号：<span>admin</span> / <span>123456</span><br>
+        </div>
+    </div>
+</div>
+
+<div id="mainPage" class="main-container" style="display: none;">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">📚 图书管理</div>
+            <button class="logout-btn" onclick="doLogout()">退出登录</button>
+        </div>
+        <ul class="sidebar-menu">
+            <li id="menu-book" onclick="switchPage('book')">图书信息管理</li>
+            <li id="menu-user" onclick="switchPage('user')">校园人员管理</li>
+            <li id="menu-borrow" onclick="switchPage('borrow')">图书借还管理</li>
+            <li id="menu-exception" onclick="switchPage('exception')">损坏丢失处理</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <!-- 图书管理页 -->
+        <div id="book" class="page">
+            <div class="page-title">图书信息管理</div>
+            <div class="card">
+                <h3>图书入库录入</h3>
+                <div class="form-group">
+                    <div class="form-item"><label>一级大类</label><select id="cateLevel1" onchange="changeCate1()"></select></div>
+                    <div class="form-item">
+                        <label>二级细分小类</label>
+                        <input type="text" id="cateLevel2" list="cate2Suggest" placeholder="可输入或选择分类号">
+                        <datalist id="cate2Suggest"></datalist>
+                    </div>
+                    <div class="form-item"><label>书名</label><input type="text" id="bookName" placeholder="必填"></div>
+                    <div class="form-item"><label>作者</label><input type="text" id="bookAuthor" placeholder="必填"></div>
+                    <div class="form-item"><label>出版社</label><input type="text" id="bookPublisher" placeholder="出版社名称"></div>
+                    <div class="form-item"><label>ISBN</label><input type="text" id="bookIsbn" placeholder="13位数字ISBN"></div>
+                    <div class="form-item"><label>定价</label><input type="number" id="bookPrice" placeholder="图书原价（≥0）" min="0" step="0.01"></div>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-success" onclick="addBook()">手动入库</button>
+                    <button class="btn btn-primary" onclick="document.getElementById('csvBookFile').click()">CSV批量导入</button>
+                    <input type="file" id="csvBookFile" accept=".csv" style="display: none;" onchange="importBookCSV(event)">
+                    <a href="data:text/csv;charset=utf-8,分类号,书名,作者,出版社,ISBN,定价%0AA1,马克思主义哲学原理,陈先达,人民出版社,9787010001001,45.0%0AB0,哲学导论,张世英,北京大学出版社,9787301299169,36.0%0ATP311,Python编程从入门到实践,埃里克·马瑟斯,人民邮电出版社,9787115546081,69.8" download="图书导入模板.csv" class="btn btn-info">下载导入模板</a>
+                </div>
+            </div>
+            <div class="card">
+                <h3>馆藏图书列表</h3>
+                <table class="table"><thead><tr><th>馆藏唯一编码</th><th>分类号</th><th>ISBN</th><th>书名</th><th>作者</th><th>出版社</th><th>定价</th><th>当前借阅人</th><th>馆藏状态</th><th>备注</th><th>操作</th></tr></thead><tbody id="bookList"></tbody></table>
+            </div>
+        </div>
+
+        <!-- 人员管理页 -->
+        <div id="user" class="page">
+            <div class="page-title">校园人员管理</div>
+            <div class="card">
+                <h3>人员信息导入</h3>
+                <div class="form-group">
+                    <button class="btn btn-primary" onclick="document.getElementById('csvStudentFile').click()">导入学生信息CSV</button>
+                    <input type="file" id="csvStudentFile" accept=".csv" style="display: none;" onchange="importStudentCSV(event)">
+                    <button class="btn btn-success" onclick="document.getElementById('csvTeacherFile').click()">导入教师信息CSV</button>
+                    <input type="file" id="csvTeacherFile" accept=".csv" style="display: none;" onchange="importTeacherCSV(event)">
+                    <a href="data:text/csv;charset=utf-8,姓名,性别,学号,学院,学历,年级,专业,身份证号%0A张三,男,2024001,计算机学院,本科生,2024级,软件工程,440101200601011234" download="学生信息模板.csv" class="btn btn-info">下载学生模板</a>
+                    <a href="data:text/csv;charset=utf-8,姓名,性别,工号,学院,身份证号%0A王建国,男,TEA001,工学院,440101198501011111" download="教师信息模板.csv" class="btn btn-info">下载教师模板</a>
+                </div>
+                <p class="tip-text danger-text">导入后学生/教师可用学号/工号登录，密码为身份证后6位</p>
+            </div>
+            <div class="card"><h3>学生信息列表</h3><table class="table"><thead><tr><th>学号</th><th>姓名</th><th>性别</th><th>学院</th><th>学历</th><th>年级</th><th>专业</th><th>借阅状态</th></tr></thead><tbody id="studentList"></tbody></table></div>
+            <div class="card"><h3>教师信息列表</h3><table class="table"><thead><tr><th>工号</th><th>姓名</th><th>性别</th><th>学院</th><th>借阅状态</th></tr></thead><tbody id="teacherList"></tbody></table></div>
+        </div>
+
+        <!-- 借还管理页 -->
+        <div id="borrow" class="page">
+            <div class="page-title">图书借还管理</div>
+            <div class="rule-card">📖 借阅规则：单次借阅期限30天，超时未还按每本每天0.1元收取罚款；有超时未还/未结清罚款的用户，禁止新的借书操作<br>🔄 续借规则：每本书最多续借2次，每次续借延长30天（从续借当天算起），逾期图书不可续借</div>
+            <div class="card">
+                <h3>借还操作登记</h3>
+                <div class="form-group">
+                    <div class="form-item"><label>馆藏编码</label><input type="text" id="borrowCode" placeholder="直接输入编码或通过书名自动填入"></div>
+                    <div class="form-item search-wrapper">
+                        <label>按书名搜索（模糊匹配）</label>
+                        <input type="text" id="bookNameSearch" placeholder="输入书名关键词，自动填入编码">
+                        <div id="bookSearchDropdown" class="search-dropdown" style="display: none;"></div>
+                    </div>
+                    <div class="form-item"><label>借阅人（学号/工号）</label><input type="text" id="borrowUser" placeholder="仅支持校内人员"></div>
+                </div>
+                <button class="btn btn-info" onclick="doBorrow()">借书登记</button>
+                <button class="btn btn-success" onclick="doReturn()">还书登记</button>
+            </div>
+            <div class="card">
+                <h3 id="borrowListTitle">借还流水记录</h3>
+                <table class="table"><thead><tr><th>馆藏编码</th><th>书名</th><th>借阅人</th><th>借阅时间</th><th>最晚归还日期</th><th>归还时间</th><th>超时天数</th><th>应缴罚款</th><th>罚款状态</th><th>续借次数</th><th>操作</th></tr></thead><tbody id="borrowList"></tbody></table>
+            </div>
+        </div>
+
+        <!-- 异常处理页 -->
+        <div id="exception" class="page">
+            <div class="page-title">图书损坏/丢失处理</div>
+            <div class="rule-card">⚠️ 处理规则：自然损坏无需赔偿，人为损坏按原价赔偿；丢失/损坏图书将被锁定，无法借出，完成处理后可注销编码重新入库</div>
+            <div class="card">
+                <h3>损坏/丢失登记</h3>
+                <div class="form-group">
+                    <div class="form-item"><label>馆藏编码</label><input type="text" id="exCode" placeholder="输入异常图书编码"></div>
+                    <div class="form-item"><label>异常类型</label><select id="exType"><option value="lost">图书丢失</option><option value="nature">自然损坏</option><option value="human">人为损坏</option></select></div>
+                    <div class="form-item"><label>赔偿金额</label><input type="number" id="exPrice" placeholder="人为损坏/丢失必填"></div>
+                    <div class="form-item" style="flex:2;min-width:300px;"><label>损坏/丢失描述</label><textarea id="exDesc" placeholder="请详细描述异常情况"></textarea></div>
+                </div>
+                <button class="btn btn-warning" onclick="exceptionRegister()">异常登记</button>
+                <button class="btn btn-danger" onclick="cancelCode()">注销馆藏编码</button>
+                <button class="btn btn-success" onclick="reCreateCode()">重新生成编码重新入库</button>
+            </div>
+            <div class="card"><h3>异常处理记录</h3><table class="table"><thead><tr><th>馆藏编码</th><th>异常类型</th><th>赔偿金额</th><th>异常描述</th><th>处理时间</th><th>处理人</th><th>处理状态</th></tr></thead><tbody id="exList"></tbody></table></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const CATE_DATA = {
+    "A": { name: "马克思主义、列宁主义、毛泽东思想、邓小平理论", children: { "A1": "马克思、恩格斯著作", "A2": "列宁著作", "A3": "斯大林著作", "A4": "毛泽东著作", "A8": "马列主义、毛泽东思想、邓小平理论的学习和研究" } },
+    "B": { name: "哲学、宗教", children: { "B0": "哲学理论", "B1": "世界哲学", "B2": "中国哲学", "B82": "伦理学", "B83": "美学", "B94": "佛教", "B95": "伊斯兰教", "B97": "基督教" } },
+    "C": { name: "社会科学总论", children: { "C0": "社会科学理论与方法论", "C8": "统计学", "C91": "社会学", "C92": "人口学", "C93": "管理学", "C96": "人才学" } },
+    "D": { name: "政治、法律", children: { "D0": "政治理论", "D6": "中国政治", "D8": "外交、国际关系", "D9": "法律", "D92": "中国法律", "D99": "国际法" } },
+    "F": { name: "经济", children: { "F0": "经济学", "F23": "会计", "F27": "企业经济", "F3": "农业经济", "F4": "工业经济", "F7": "贸易经济", "F83": "金融、银行", "F84": "保险" } },
+    "G": { name: "文化、科学、教育、体育", children: { "G2": "信息与知识传播", "G25": "图书馆学、图书馆事业", "G4": "教育", "G64": "高等教育", "G8": "体育", "G12": "中国文化事业" } },
+    "H": { name: "语言、文字", children: { "H0": "语言学", "H1": "汉语", "H19": "汉语教学", "H3": "常用外国语", "H31": "英语", "H36": "日语", "H4": "汉藏语系" } },
+    "I": { name: "文学", children: { "I0": "文学理论", "I1": "世界文学", "I2": "中国文学", "I24": "小说", "I247": "当代小说", "I26": "散文", "I27": "民间文学", "I3": "亚洲文学" } },
+    "J": { name: "艺术", children: { "J0": "艺术理论", "J2": "绘画", "J3": "雕塑", "J4": "摄影", "J6": "音乐", "J7": "舞蹈", "J9": "电影、电视艺术" } },
+    "K": { name: "历史、地理", children: { "K0": "史学理论", "K2": "中国史", "K3": "亚洲史", "K5": "欧洲史", "K81": "传记", "K82": "中国人物传记", "K9": "地理" } },
+    "O": { name: "数理科学和化学", children: { "O1": "数学", "O13": "高等数学", "O15": "代数、数论", "O17": "数学分析", "O3": "力学", "O4": "物理学", "O6": "化学", "O7": "晶体学" } },
+    "P": { name: "天文学、地球科学", children: { "P1": "天文学", "P2": "测绘学", "P3": "地球物理学", "P4": "气象学", "P5": "地质学", "P7": "海洋学" } },
+    "Q": { name: "生物科学", children: { "Q1": "普通生物学", "Q2": "细胞生物学", "Q3": "遗传学", "Q5": "生物化学", "Q81": "生物工程学" } },
+    "R": { name: "医药、卫生", children: { "R1": "预防医学、卫生学", "R2": "中国医学", "R3": "基础医学", "R4": "临床医学", "R5": "内科学", "R6": "外科学", "R9": "药学" } },
+    "S": { name: "农业科学", children: { "S1": "农业基础科学", "S2": "农业工程", "S3": "农学", "S4": "植物保护", "S5": "农作物", "S6": "园艺", "S7": "林业", "S8": "畜牧、动物医学" } },
+    "T": { name: "工业技术", children: { "TB": "一般工业技术", "TD": "矿业工程", "TE": "石油、天然气工业", "TF": "冶金工业", "TG": "金属学与金属工艺", "TH": "机械、仪表工业", "TM": "电工技术", "TN": "无线电电子学、电信技术", "TP": "自动化技术、计算机技术", "TP31": "计算机软件", "TQ": "化学工业", "TS": "轻工业、手工业", "TU": "建筑科学", "TV": "水利工程" } },
+    "U": { name: "交通运输", children: { "U1": "综合运输", "U2": "铁路运输", "U4": "公路运输", "U6": "水路运输", "U8": "航空运输" } },
+    "V": { name: "航空、航天", children: { "V1": "航空、航天技术的研究与探索", "V2": "航空", "V4": "航天（宇宙航行）", "V7": "航空、航天医学" } },
+    "X": { name: "环境科学、安全科学", children: { "X1": "环境科学基础理论", "X2": "社会与环境", "X3": "环境保护管理", "X5": "环境污染及其防治", "X9": "安全科学" } },
+    "Z": { name: "综合性图书", children: { "Z1": "丛书", "Z2": "百科全书、类书", "Z3": "辞典", "Z4": "论文集、全集、选集", "Z6": "期刊、连续性出版物", "Z8": "图书目录、文摘、索引" } }
+};
+
+const BASE_URL = 'http://172.22.165.70:3000';
+let AUTH_TOKEN = null;
+let currentUser = null;
+
+async function api(url, method = 'GET', body = null) {
+    const headers = { 'Content-Type': 'application/json' };
+    if (AUTH_TOKEN) headers['Authorization'] = 'Bearer ' + AUTH_TOKEN;
+    const opts = { method, headers };
+    if (body) opts.body = JSON.stringify(body);
+    const res = await fetch(BASE_URL + url, opts);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || '请求失败');
+    return data;
+}
+
+window.onload = function () {
+    const token = localStorage.getItem('LIBRARY_TOKEN');
+    const userStr = localStorage.getItem('LIBRARY_USER');
+    if (token && userStr) { AUTH_TOKEN = token; currentUser = JSON.parse(userStr); showMainPage(); }
+    else showLoginPage();
+};
+
+function showLoginPage() {
+    document.getElementById('loginPage').style.display = 'flex';
+    document.getElementById('mainPage').style.display = 'none';
+}
+
+function showMainPage() {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('mainPage').style.display = 'flex';
+    initCateSelect();
+    const menus = { student:['borrow'], teacher:['book','borrow'], admin:['book','user','borrow','exception'] };
+    document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.add('hidden'));
+    menus[currentUser.role].forEach(id => document.getElementById('menu-'+id).classList.remove('hidden'));
+    switchPage(menus[currentUser.role][0]);
+    if (currentUser.role !== 'admin') {
+        document.getElementById('borrowUser').value = currentUser.no;
+        document.getElementById('borrowUser').readOnly = true;
+        document.getElementById('borrowListTitle').textContent = '我的借还流水记录';
+    } else {
+        document.getElementById('borrowUser').readOnly = false;
+        document.getElementById('borrowListTitle').textContent = '借还流水记录';
+    }
+    initBookSearch();
+    renderAll();
+}
+
+async function doLogin() {
+    const role = document.getElementById('loginRole').value;
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    if (!username || !password) return alert('请输入账号密码');
+    try {
+        const data = await api('/api/login', 'POST', { role, username, password });
+        AUTH_TOKEN = data.token;
+        currentUser = data.user;
+        localStorage.setItem('LIBRARY_TOKEN', AUTH_TOKEN);
+        localStorage.setItem('LIBRARY_USER', JSON.stringify(currentUser));
+        showMainPage();
+    } catch(e) { alert(e.message); }
+}
+
+function doLogout() {
+    if (!confirm('确认退出登录？')) return;
+    AUTH_TOKEN = null; currentUser = null;
+    localStorage.removeItem('LIBRARY_TOKEN'); localStorage.removeItem('LIBRARY_USER');
+    showLoginPage();
+}
+
+function switchPage(pageId) {
+    const allowed = { student:['borrow'], teacher:['book','borrow'], admin:['book','user','borrow','exception'] }[currentUser.role];
+    if (!allowed.includes(pageId)) return alert('无权限访问');
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+    document.getElementById('menu-'+pageId).classList.add('active');
+    renderAll();
+}
+
+async function renderAll() {
+    await Promise.all([
+        renderBookList(), renderStudentList(), renderTeacherList(),
+        renderBorrowList(), renderExceptionList()
+    ]);
+}
+
+function initCateSelect() {
+    const c1 = document.getElementById('cateLevel1');
+    let o = '';
+    for(let k in CATE_DATA) o += `<option value="${k}">${k} - ${CATE_DATA[k].name}</option>`;
+    c1.innerHTML = o;
+    changeCate1();
+}
+
+function changeCate1() {
+    const cate1Code = document.getElementById('cateLevel1').value;
+    const datalist = document.getElementById('cate2Suggest');
+    const children = CATE_DATA[cate1Code].children;
+    let options = '';
+    for (let code in children) {
+        options += `<option value="${code}">${children[code]}</option>`;
+    }
+    datalist.innerHTML = options;
+}
+
+// 图书列表
+async function renderBookList() {
+    try {
+        const books = await api('/api/books');
+        const tbody = document.getElementById('bookList');
+        if (!books || books.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="11" class="empty-tip">暂无馆藏图书</td></tr>';
+            return;
+        }
+        const smap = {0:'在馆',1:'已借出',2:'已丢失',3:'自然损坏',4:'人为损坏'};
+        const scls = {0:'state-in',1:'state-out',2:'state-lost',3:'state-nature',4:'state-human'};
+        tbody.innerHTML = books.map(b => `
+            <tr>
+                <td>${b.book_code || '编码缺失'}</td>
+                <td><span class="cate-badge">${b.cate_code || '-'}</span></td>
+                <td>${b.isbn || '-'}</td>
+                <td>${b.name || '-'}</td>
+                <td>${b.author || '-'}</td>
+                <td>${b.publisher || '-'}</td>
+                <td>${b.price || 0}元</td>
+                <td>${b.borrow_user_name ? b.borrow_user_name+'('+b.borrow_user_no+')' : '-'}</td>
+                <td><span class="state-badge ${scls[b.state]}">${smap[b.state]||'未知'}</span></td>
+                <td>${b.remark || '-'}</td>
+                <td>${currentUser.role==='admin' ? `<button class="btn btn-danger" onclick="deleteBook('${b.book_code.replace(/'/g, "\\'")}')">删除</button>` : '-'}</td>
+            </tr>`).join('');
+    } catch(e) {
+        document.getElementById('bookList').innerHTML = `<tr><td colspan="11" class="empty-tip">加载失败：${e.message}</td></tr>`;
+    }
+}
+
+async function addBook() {
+    const cate = document.getElementById('cateLevel2').value.trim();
+    const name = document.getElementById('bookName').value.trim();
+    const author = document.getElementById('bookAuthor').value.trim();
+    const publisher = document.getElementById('bookPublisher').value.trim();
+    const isbn = document.getElementById('bookIsbn').value.trim();
+    const price = document.getElementById('bookPrice').value.trim();
+    if (!name || !author) return alert('书名和作者不能为空');
+    if (!cate) return alert('请填写二级分类号');
+    if (isbn && !/^\d{13}$/.test(isbn)) return alert('ISBN 必须为13位纯数字');
+    if (price && (isNaN(parseFloat(price)) || parseFloat(price) < 0)) return alert('定价必须为大于等于0的数字');
+    try {
+        const res = await api('/api/books', 'POST', { cateCode: cate, name, author, publisher, isbn, price });
+        alert('入库成功，馆藏编码：' + res.bookCode);
+        ['bookName','bookAuthor','bookPublisher','bookIsbn','bookPrice'].forEach(id=>document.getElementById(id).value='');
+        renderAll();
+    } catch (e) { alert('手动入库失败：' + e.message); }
+}
+
+async function deleteBook(code) {
+    if (!confirm('确认删除？')) return;
+    try {
+        await api('/api/books/' + encodeURIComponent(code), 'DELETE');
+        renderAll();
+    } catch (e) { alert('删除图书失败：' + e.message); }
+}
+
+async function importBookCSV(e) {
+    const f = e.target.files[0];
+    if (!f) return;
+    const fr = new FileReader();
+    fr.onload = async function(ev) {
+        try {
+            const res = await api('/api/books/import', 'POST', { csvText: ev.target.result });
+            let msg = `成功导入 ${res.count} 本图书`;
+            if (res.errors && res.errors.length) msg += '\n部分失败：\n' + res.errors.join('\n');
+            alert(msg);
+            renderAll();
+        } catch (err) { alert('导入失败：' + err.message); }
+    };
+    fr.readAsText(f, 'UTF-8');
+}
+
+// 人员列表（动态状态）
+async function renderStudentList() {
+    try {
+        const list = await api('/api/students');
+        const tbody = document.getElementById('studentList');
+        if (!list || !list.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-tip">暂无学生</td></tr>'; return; }
+        tbody.innerHTML = list.map(s => {
+            const statusHtml = s.is_abnormal ? '<span class="state-badge state-abnormal">异常</span>' : '<span class="state-badge state-in">正常</span>';
+            return `<tr><td>${s.no}</td><td>${s.name}</td><td>${s.gender}</td><td>${s.college}</td><td>${s.education}</td><td>${s.grade}</td><td>${s.major}</td><td>${statusHtml}</td></tr>`;
+        }).join('');
+    } catch(e) {
+        document.getElementById('studentList').innerHTML = `<tr><td colspan="8" class="empty-tip">加载失败：${e.message}</td></tr>`;
+    }
+}
+
+async function renderTeacherList() {
+    try {
+        const list = await api('/api/teachers');
+        const tbody = document.getElementById('teacherList');
+        if (!list || !list.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty-tip">暂无教师</td></tr>'; return; }
+        tbody.innerHTML = list.map(t => {
+            const statusHtml = t.is_abnormal ? '<span class="state-badge state-abnormal">异常</span>' : '<span class="state-badge state-in">正常</span>';
+            return `<tr><td>${t.no}</td><td>${t.name}</td><td>${t.gender}</td><td>${t.college}</td><td>${statusHtml}</td></tr>`;
+        }).join('');
+    } catch(e) {
+        document.getElementById('teacherList').innerHTML = `<tr><td colspan="5" class="empty-tip">加载失败：${e.message}</td></tr>`;
+    }
+}
+
+async function importStudentCSV(e) {
+    const f = e.target.files[0];
+    if (!f) return;
+    const fr = new FileReader();
+    fr.onload = async function(ev) {
+        try {
+            const res = await api('/api/students/import', 'POST', { csvText: ev.target.result });
+            let msg = `成功导入 ${res.success} 条学生记录`;
+            if (res.errors.length) msg += '\n部分失败：' + res.errors.join('；');
+            alert(msg);
+            renderAll();
+        } catch (err) { alert('导入失败：' + err.message); }
+    };
+    fr.readAsText(f, 'UTF-8');
+}
+
+async function importTeacherCSV(e) {
+    const f = e.target.files[0];
+    if (!f) return;
+    const fr = new FileReader();
+    fr.onload = async function(ev) {
+        try {
+            const res = await api('/api/teachers/import', 'POST', { csvText: ev.target.result });
+            let msg = `成功导入 ${res.success} 条教师记录`;
+            if (res.errors.length) msg += '\n部分失败：' + res.errors.join('；');
+            alert(msg);
+            renderAll();
+        } catch (err) { alert('导入失败：' + err.message); }
+    };
+    fr.readAsText(f, 'UTF-8');
+}
+
+// 借还 + 搜索 + 续借
+let searchTimer = null;
+function initBookSearch() {
+    const si = document.getElementById('bookNameSearch');
+    const dd = document.getElementById('bookSearchDropdown');
+    const ci = document.getElementById('borrowCode');
+    si.addEventListener('input', function() {
+        clearTimeout(searchTimer);
+        const kw = this.value.trim();
+        if (!kw) { dd.style.display = 'none'; return; }
+        searchTimer = setTimeout(async () => {
+            try {
+                const books = await api(`/api/books/search?keyword=${encodeURIComponent(kw)}`);
+                if (!books.length) dd.innerHTML = '<div class="search-dropdown-item" style="color:#7f8c8d;">未找到在馆图书</div>';
+                else dd.innerHTML = books.map(b => `<div class="search-dropdown-item" data-code="${b.book_code}"><span class="book-name">${b.name} - ${b.author}</span><span class="book-code">${b.book_code}</span></div>`).join('');
+                dd.style.display = 'block';
+            } catch(err) {
+                dd.innerHTML = `<div class="search-dropdown-item" style="color:#e74c3c;">搜索失败：${err.message}</div>`;
+                dd.style.display = 'block';
+            }
+        }, 300);
+    });
+    dd.addEventListener('click', function(e) {
+        const item = e.target.closest('.search-dropdown-item');
+        if (item && item.dataset.code) { ci.value = item.dataset.code; si.value = ''; dd.style.display = 'none'; }
+    });
+    document.addEventListener('click', function(e) { if (!si.contains(e.target) && !dd.contains(e.target)) dd.style.display = 'none'; });
+}
+
+async function renderBorrowList() {
+    try {
+        const records = await api('/api/borrows');
+        const tbody = document.getElementById('borrowList');
+        if (!records || !records.length) { tbody.innerHTML = '<tr><td colspan="11" class="empty-tip">暂无借还记录</td></tr>'; return; }
+        const fmt = d => d ? String(d).substr(0,10) : '-';
+        tbody.innerHTML = records.map(r => {
+            const overdue = r.currentOverdueDays || 0;
+            const fine = r.currentFine || 0;
+            const paid = r.fine_paid ? '<span class="state-badge state-paid">已结清</span>' : (fine > 0 ? '<span class="state-badge state-overdue">未缴纳</span>' : '-');
+            const renewTimes = r.renew_times || 0;
+            // 续借按钮：状态为已借未还，且未超期，且续借次数<2
+            let renewBtn = '';
+            if (r.state === 1 && overdue === 0 && renewTimes < 2) {
+                // 权限：管理员或借阅人本人均可续借
+                const canRenew = (currentUser.role === 'admin') || (currentUser.role !== 'admin' && currentUser.no === r.user_no);
+                if (canRenew) {
+                    renewBtn = `<button class="btn btn-info" onclick="doRenew('${r.book_code}', '${r.user_no}')">续借</button>`;
+                }
+            }
+            const payBtn = (currentUser.role === 'admin' && !r.fine_paid && fine > 0) ? `<button class="btn btn-success" onclick="payFine(${r.id})">缴纳罚款</button>` : '';
+            const opsHtml = [payBtn, renewBtn].filter(Boolean).join(' ');
+            return `<tr>
+                <td>${r.book_code}</td><td>${r.book_name}</td><td>${r.user_name}(${r.user_no})</td>
+                <td>${fmt(r.borrow_time)}</td><td>${fmt(r.deadline)}</td><td>${fmt(r.return_time)}</td>
+                <td>${overdue ? `<span class="danger-text">${overdue}天</span>` : '0天'}</td>
+                <td>${fine ? `<span class="danger-text">${fine}元</span>` : '0元'}</td>
+                <td>${paid}</td>
+                <td>${renewTimes}/2</td>
+                <td>${opsHtml || '-'}</td></tr>`;
+        }).join('');
+    } catch(e) {
+        document.getElementById('borrowList').innerHTML = `<tr><td colspan="11" class="empty-tip">加载失败：${e.message}</td></tr>`;
+    }
+}
+
+async function doBorrow() {
+    const code = document.getElementById('borrowCode').value.trim();
+    let user = document.getElementById('borrowUser').value.trim();
+    if (currentUser.role !== 'admin') user = currentUser.no;
+    if (!code) return alert('请输入要借阅的图书馆藏编码');
+    if (!user) return alert('借阅人信息缺失，请联系管理员');
+    try {
+        await api('/api/borrows/borrow', 'POST', { bookCode: code, userNo: user });
+        alert('借书成功');
+        document.getElementById('borrowCode').value = '';
+        document.getElementById('bookNameSearch').value = '';
+        renderAll();
+    } catch (e) { alert('借书操作失败：' + e.message); }
+}
+
+async function doReturn() {
+    const code = document.getElementById('borrowCode').value.trim();
+    let user = document.getElementById('borrowUser').value.trim();
+    if (currentUser.role !== 'admin') user = currentUser.no;
+    if (!code) return alert('请输入要归还的图书馆藏编码');
+    if (!user) return alert('借阅人信息缺失，请联系管理员');
+    try {
+        const res = await api('/api/borrows/return', 'POST', { bookCode: code, userNo: user });
+        document.getElementById('borrowCode').value = '';
+        document.getElementById('bookNameSearch').value = '';
+        if (res.overdueDays > 0) alert(`还书成功，超时${res.overdueDays}天，罚款${res.fine}元`);
+        else alert('还书成功');
+        renderAll();
+    } catch (e) { alert('还书操作失败：' + e.message); }
+}
+
+async function doRenew(bookCode, userNo) {
+    try {
+        const res = await api('/api/borrows/renew', 'POST', { bookCode, userNo });
+        alert(`续借成功，新的最晚归还日期：${res.newDeadline}，已续借 ${res.renewTimes} 次`);
+        renderAll();
+    } catch (e) {
+        alert('续借失败：' + e.message);
+    }
+}
+
+async function payFine(id) {
+    try {
+        await api('/api/borrows/payfine', 'POST', { recordId: id });
+        alert('罚款缴纳成功');
+        renderAll();
+    } catch (e) { alert('缴纳罚款失败：' + e.message); }
+}
+
+// 异常处理（不变）
+async function renderExceptionList() {
+    try {
+        const list = await api('/api/exceptions');
+        const tbody = document.getElementById('exList');
+        if (!list || !list.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-tip">暂无异常记录</td></tr>'; return; }
+        tbody.innerHTML = list.map(e => `<tr><td>${e.book_code}</td><td>${e.type}</td><td>${e.price}元</td><td>${e.description}</td><td>${e.handle_time ? e.handle_time.substr(0,10) : ''}</td><td>${e.handle_user}</td><td>${e.state}</td></tr>`).join('');
+    } catch(e) {
+        document.getElementById('exList').innerHTML = `<tr><td colspan="7" class="empty-tip">加载失败：${e.message}</td></tr>`;
+    }
+}
+
+async function exceptionRegister() {
+    const code = document.getElementById('exCode').value.trim();
+    const type = document.getElementById('exType').value;
+    const price = document.getElementById('exPrice').value.trim();
+    const desc = document.getElementById('exDesc').value.trim();
+    if (!code) return alert('请输入异常图书的馆藏编码');
+    if ((type === 'lost' || type === 'human') && !price) return alert('丢失/人为损坏必须填写赔偿金额');
+    try {
+        await api('/api/exceptions/register', 'POST', { bookCode: code, exType: type, exPrice: price, exDesc: desc });
+        alert('异常登记成功');
+        ['exCode','exPrice','exDesc'].forEach(id => document.getElementById(id).value = '');
+        renderAll();
+    } catch (e) { alert('异常登记失败：' + e.message); }
+}
+
+async function cancelCode() {
+    const code = document.getElementById('exCode').value.trim();
+    if (!code) return alert('请输入要注销的馆藏编码');
+    if (!confirm('确认注销该编码？该操作不可恢复')) return;
+    try {
+        await api('/api/exceptions/cancel', 'POST', { bookCode: code });
+        alert('注销成功');
+        document.getElementById('exCode').value = '';
+        renderAll();
+    } catch (e) { alert('注销失败：' + e.message); }
+}
+
+async function reCreateCode() {
+    const code = document.getElementById('exCode').value.trim();
+    if (!code) return alert('请输入要重新入库的馆藏编码');
+    try {
+        const res = await api('/api/exceptions/recreate', 'POST', { bookCode: code });
+        alert('重新入库成功，新编码：' + res.newCode);
+        document.getElementById('exCode').value = '';
+        renderAll();
+    } catch (e) { alert('重新入库失败：' + e.message); }
+}
+</script>
+</body>
+</html>
