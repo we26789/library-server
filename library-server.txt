@@ -4,3 +4,15 @@ git commit -m "Initial commit"
 git remote add origin https://github.com/we26789/library-server.git
 git branch -M main
 git push -u origin main
+
+# 1. 查看变更（养成习惯，避免误传）
+git status
+
+# 2. 添加所有改动的文件
+git add .
+
+# 3. 提交并写上简短的改动说明
+git commit -m "图书管理系统初步代码。"
+
+# 4. 推送到 GitHub
+git push origin main
