@@ -7,7 +7,7 @@ const pool = require('./db');
 const app = express();
 const PORT = 3000;
 const SECRET = 'library_secret_key_2024';
-
+app.use(express.static(__dirname)); // 托管当前目录下的所有静态文件
 app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));

@@ -1,0 +1,93 @@
+:root {
+  --background: oklch(0.982 0.003 85);
+  --foreground: oklch(0.245 0.01 80);
+  --card: oklch(0.997 0.002 85);
+  --card-foreground: oklch(0.245 0.01 80);
+  --popover: oklch(0.997 0.002 85);
+  --popover-foreground: oklch(0.245 0.01 80);
+
+  --primary: oklch(0.36 0.03 70);
+  --primary-foreground: oklch(0.985 0.002 90);
+  --secondary: oklch(0.94 0.005 90);
+  --secondary-foreground: oklch(0.27 0.01 80);
+  --muted: oklch(0.955 0.004 90);
+  --muted-foreground: oklch(0.52 0.01 80);
+  --accent: oklch(0.9 0.015 75);
+  --accent-foreground: oklch(0.27 0.01 80);
+
+  --destructive: oklch(0.56 0.17 28);
+  --destructive-foreground: oklch(0.985 0.002 90);
+  --border: oklch(0.89 0.004 88);
+  --input: oklch(0.89 0.004 88);
+  --ring: oklch(0.62 0.02 72);
+
+  --sidebar: oklch(0.22 0.01 80);
+  --sidebar-foreground: oklch(0.94 0.003 90);
+  --sidebar-primary: oklch(0.36 0.03 70);
+  --sidebar-primary-foreground: oklch(0.985 0.002 90);
+  --sidebar-accent: oklch(0.31 0.01 80);
+  --sidebar-accent-foreground: oklch(0.95 0.002 90);
+  --sidebar-border: oklch(0.32 0.01 80);
+  --sidebar-ring: oklch(0.62 0.02 72);
+
+  --font-sans: "Inter", "Noto Sans SC", sans-serif;
+  --font-serif: "Source Serif Pro", "Noto Serif SC", serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  --radius: 0.75rem;
+}
+
+html,
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+  font-family: var(--font-sans) !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--foreground) !important;
+}
+
+/* Clear button hierarchy for quick scanning */
+.btn {
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+  min-height: 38px !important;
+}
+
+.btn-primary {
+  background: #2f3943 !important;
+  color: #f8fafb !important;
+  border: 1px solid #2f3943 !important;
+}
+
+.btn-success {
+  background: #345e45 !important;
+  color: #f7fbf8 !important;
+  border: 1px solid #345e45 !important;
+}
+
+.btn-warning {
+  background: #7f5d2f !important;
+  color: #fff9ef !important;
+  border: 1px solid #7f5d2f !important;
+}
+
+.btn-danger {
+  background: #834b45 !important;
+  color: #fff7f6 !important;
+  border: 1px solid #834b45 !important;
+}
+
+.btn-info {
+  background: #365866 !important;
+  color: #f4fafc !important;
+  border: 1px solid #365866 !important;
+}
+
+.btn-secondary {
+  background: #f0f1f2 !important;
+  color: #323c44 !important;
+  border: 1px solid #d6dbe0 !important;
+}
