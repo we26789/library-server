@@ -1,0 +1,75 @@
+:root {
+  --background: oklch(0.9850 0.0020 95);
+  --foreground: oklch(0.2600 0.0100 80);
+  --card: oklch(0.9980 0.0010 95);
+  --card-foreground: oklch(0.2600 0.0100 80);
+  --popover: oklch(0.9980 0.0010 95);
+  --popover-foreground: oklch(0.2600 0.0100 80);
+  --primary: oklch(0.3600 0.0200 70);
+  --primary-foreground: oklch(0.9850 0.0020 95);
+  --secondary: oklch(0.9400 0.0050 85);
+  --secondary-foreground: oklch(0.3000 0.0100 80);
+  --muted: oklch(0.9550 0.0040 90);
+  --muted-foreground: oklch(0.5000 0.0080 80);
+  --accent: oklch(0.9000 0.0200 65);
+  --accent-foreground: oklch(0.2700 0.0100 80);
+  --destructive: oklch(0.5500 0.1600 28);
+  --destructive-foreground: oklch(0.9850 0.0020 95);
+  --border: oklch(0.9000 0.0040 85);
+  --input: oklch(0.9000 0.0040 85);
+  --ring: oklch(0.6200 0.0180 72);
+  --chart-1: oklch(0.6200 0.0400 65);
+  --chart-2: oklch(0.5800 0.0300 95);
+  --chart-3: oklch(0.6600 0.0300 40);
+  --chart-4: oklch(0.5400 0.0200 75);
+  --chart-5: oklch(0.7000 0.0200 90);
+  --sidebar: oklch(0.2200 0.0100 80);
+  --sidebar-foreground: oklch(0.9300 0.0030 90);
+  --sidebar-primary: oklch(0.9000 0.0200 65);
+  --sidebar-primary-foreground: oklch(0.2000 0.0100 80);
+  --sidebar-accent: oklch(0.3000 0.0100 80);
+  --sidebar-accent-foreground: oklch(0.9600 0.0020 90);
+  --sidebar-border: oklch(0.3000 0.0100 80);
+  --sidebar-ring: oklch(0.9000 0.0200 65);
+  --font-sans: "Plus Jakarta Sans", "Inter", "Noto Sans SC", sans-serif;
+  --font-serif: "Source Serif Pro", "Noto Serif SC", serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  --radius: 0.75rem;
+  --shadow-2xs: 0 1px 2px 0 hsl(24 8% 12% / 0.04);
+  --shadow-xs: 0 1px 3px 0 hsl(24 8% 12% / 0.05);
+  --shadow-sm: 0 2px 6px -2px hsl(24 8% 12% / 0.08), 0 1px 2px 0 hsl(24 8% 12% / 0.04);
+  --shadow: 0 6px 20px -8px hsl(24 8% 12% / 0.12), 0 2px 4px -2px hsl(24 8% 12% / 0.05);
+  --shadow-md: 0 10px 30px -12px hsl(24 8% 12% / 0.14), 0 4px 10px -4px hsl(24 8% 12% / 0.07);
+  --shadow-lg: 0 18px 40px -16px hsl(24 8% 12% / 0.16), 0 8px 16px -6px hsl(24 8% 12% / 0.08);
+  --shadow-xl: 0 24px 56px -20px hsl(24 8% 12% / 0.20), 0 12px 24px -10px hsl(24 8% 12% / 0.10);
+  --shadow-2xl: 0 32px 72px -24px hsl(24 8% 12% / 0.24), 0 16px 28px -12px hsl(24 8% 12% / 0.12);
+  --tracking-normal: 0;
+  --spacing: 0.25rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* Flowbite/Tailwind override-safe base rules */
+html,
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+  font-family: var(--font-sans) !important;
+  line-height: 1.6 !important;
+  letter-spacing: 0.01em !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--foreground) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+}
