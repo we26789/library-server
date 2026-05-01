@@ -12,7 +12,7 @@ git status
 git add .
 
 # 3. 提交并写上简短的改动说明
-git commit -m "图书管理系统初步代码。"
+git commit -m "修改了教师端界面bug，去掉了入库操作，实现了全站呼吸屏与高科技界面视图。"
 
 # 4. 推送到 GitHub
 git push origin main

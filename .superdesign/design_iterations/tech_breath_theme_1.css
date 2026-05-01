@@ -1,0 +1,62 @@
+:root {
+  --background: oklch(0.145 0.02 255);
+  --foreground: oklch(0.93 0.01 250);
+  --card: oklch(0.21 0.02 255 / 0.78);
+  --card-foreground: oklch(0.93 0.01 250);
+  --popover: oklch(0.18 0.02 255 / 0.88);
+  --popover-foreground: oklch(0.93 0.01 250);
+
+  --primary: oklch(0.72 0.15 210);
+  --primary-foreground: oklch(0.16 0.02 255);
+  --secondary: oklch(0.26 0.03 255);
+  --secondary-foreground: oklch(0.90 0.01 250);
+  --muted: oklch(0.24 0.02 255);
+  --muted-foreground: oklch(0.73 0.02 245);
+  --accent: oklch(0.78 0.11 165);
+  --accent-foreground: oklch(0.15 0.02 255);
+
+  --destructive: oklch(0.64 0.22 26);
+  --destructive-foreground: oklch(0.98 0.01 255);
+  --border: oklch(0.38 0.04 248 / 0.55);
+  --input: oklch(0.32 0.03 250 / 0.60);
+  --ring: oklch(0.73 0.15 210);
+
+  --sidebar: oklch(0.16 0.02 255 / 0.82);
+  --sidebar-foreground: oklch(0.92 0.01 250);
+  --sidebar-primary: oklch(0.72 0.15 210);
+  --sidebar-primary-foreground: oklch(0.14 0.02 255);
+  --sidebar-accent: oklch(0.24 0.03 250);
+  --sidebar-accent-foreground: oklch(0.93 0.01 250);
+  --sidebar-border: oklch(0.42 0.04 248 / 0.55);
+  --sidebar-ring: oklch(0.74 0.13 170);
+
+  --font-sans: "Inter", "Outfit", "Noto Sans SC", sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  --radius: 0.875rem;
+
+  --shadow-2xs: 0 1px 2px hsl(200 90% 60% / 0.10);
+  --shadow-xs: 0 2px 6px hsl(200 90% 60% / 0.12);
+  --shadow-sm: 0 4px 14px hsl(200 90% 60% / 0.14);
+  --shadow: 0 8px 24px hsl(200 90% 60% / 0.16);
+  --shadow-md: 0 14px 34px hsl(200 90% 60% / 0.20);
+  --shadow-lg: 0 24px 48px hsl(200 90% 60% / 0.24);
+  --shadow-xl: 0 30px 68px hsl(200 90% 60% / 0.28);
+  --shadow-2xl: 0 40px 84px hsl(200 90% 60% / 0.33);
+}
+
+html,
+body {
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+  font-family: var(--font-sans) !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--foreground) !important;
+  letter-spacing: 0.01em !important;
+}

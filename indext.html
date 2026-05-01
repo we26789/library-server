@@ -7,13 +7,49 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href=".superdesign/design_iterations/library_modern_elegant_theme_1.css">
+    <link rel="stylesheet" href=".superdesign/design_iterations/tech_breath_theme_1.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: "Inter", "Noto Sans SC", sans-serif !important;
-            background: var(--background) !important;
+            background: radial-gradient(1200px 900px at 50% -20%, #1f3266 0%, transparent 60%), #0a0f1f !important;
             color: var(--foreground) !important;
+            overflow: hidden;
+        }
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(rgba(92, 164, 255, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(92, 164, 255, 0.08) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: radial-gradient(circle at 50% 50%, #000 20%, transparent 90%);
+            opacity: 0.32;
+        }
+        .bg-glow {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 18% 20%, rgba(83, 190, 255, 0.2), transparent 45%),
+                radial-gradient(circle at 88% 78%, rgba(84, 255, 216, 0.14), transparent 40%);
+            animation: breatheGlow 9s ease-in-out infinite;
+            opacity: 0.7;
+        }
+        #particleCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .app-layer {
+            position: relative;
+            z-index: 2;
         }
         .login-container {
             display: flex;
@@ -21,19 +57,17 @@
             align-items: center;
             min-height: 100vh;
             padding: 24px;
-            background:
-                radial-gradient(1200px 500px at 90% -10%, rgba(141, 119, 96, 0.07), transparent 60%),
-                radial-gradient(1000px 500px at 0% 100%, rgba(104, 94, 84, 0.08), transparent 70%),
-                var(--background);
+            background: transparent;
         }
         .login-box {
             width: min(100%, 420px);
-            background: var(--card);
-            border: 1px solid var(--border);
+            background: linear-gradient(145deg, rgba(20, 36, 68, 0.82), rgba(12, 22, 44, 0.74));
+            border: 1px solid rgba(104, 174, 255, 0.35);
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 24px 56px rgba(8, 17, 39, 0.52), inset 0 0 0 1px rgba(142, 202, 255, 0.12);
             padding: 36px 30px;
-            animation: fadeInUp 240ms ease-out;
+            backdrop-filter: blur(12px);
+            animation: fadeInUp 240ms ease-out, cardPulse 4.5s ease-in-out infinite;
         }
         .login-title {
             text-align: center;
@@ -52,16 +86,12 @@
             font-size: 13px;
             font-weight: 500;
         }
-        .login-form-item input,
-        .login-form-item select,
-        .form-item input,
-        .form-item select,
-        .form-item textarea {
+        .login-form-item input, .login-form-item select, .form-item input, .form-item select, .form-item textarea {
             width: 100%;
-            border: 1px solid var(--input);
+            border: 1px solid rgba(112, 164, 255, 0.36);
             border-radius: var(--radius-md);
-            background: #fff;
-            color: var(--foreground);
+            background: rgba(12, 24, 48, 0.68);
+            color: #e6f3ff;
             padding: 10px 12px;
             outline: none;
             transition: border-color 120ms ease-out, box-shadow 120ms ease-out;
@@ -71,8 +101,8 @@
         .form-item input:focus,
         .form-item select:focus,
         .form-item textarea:focus {
-            border-color: var(--ring);
-            box-shadow: 0 0 0 3px rgba(103, 89, 72, 0.12);
+            border-color: #74bcff;
+            box-shadow: 0 0 0 3px rgba(102, 181, 255, 0.22), 0 0 22px rgba(78, 170, 255, 0.25);
         }
         .login-btn,
         .btn {
@@ -90,18 +120,19 @@
         .login-btn {
             width: 100%;
             padding: 11px 14px;
-            background: var(--primary);
-            color: var(--primary-foreground);
+            background: linear-gradient(120deg, #46b8ff, #6ce7d9);
+            color: #031422;
+            box-shadow: 0 6px 20px rgba(53, 176, 255, 0.36);
         }
-        .login-btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
+        .login-btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
         .btn { padding: 9px 14px; }
-        .btn-primary { background: var(--primary); color: var(--primary-foreground); }
-        .btn-success { background: #49644f; color: #f7f6f2; }
-        .btn-danger { background: #80524f; color: #f8f5f3; }
-        .btn-warning { background: #8a6b45; color: #f8f5ee; }
-        .btn-info { background: #4f6362; color: #f5f7f7; }
-        .btn-secondary { background: var(--secondary); color: var(--secondary-foreground); border-color: var(--border); }
-        .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+        .btn-primary { background: linear-gradient(120deg, #42b1ff, #6ad0ff); color: #031422; }
+        .btn-success { background: linear-gradient(120deg, #36d5b3, #70e6d0); color: #03221d; }
+        .btn-danger { background: linear-gradient(120deg, #ff6378, #ff8a7f); color: #2a0510; }
+        .btn-warning { background: linear-gradient(120deg, #ffb55f, #ffd37b); color: #2d1a03; }
+        .btn-info { background: linear-gradient(120deg, #67a1ff, #77c2ff); color: #051632; }
+        .btn-secondary { background: rgba(18, 35, 64, 0.72); color: #d9e9ff; border-color: rgba(115, 173, 255, 0.34); }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(60, 169, 255, 0.28); }
         .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
         .login-tip {
             text-align: center;
@@ -115,18 +146,19 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
-            background: var(--background);
+            background: transparent;
         }
         .sidebar {
             width: 236px;
             flex-shrink: 0;
-            background: var(--sidebar);
+            background: linear-gradient(175deg, rgba(11, 24, 48, 0.86), rgba(8, 17, 35, 0.88));
             color: var(--sidebar-foreground);
-            border-right: 1px solid var(--sidebar-border);
+            border-right: 1px solid rgba(106, 161, 255, 0.32);
             padding: 20px 14px;
             display: flex;
             flex-direction: column;
             gap: 16px;
+            backdrop-filter: blur(10px);
         }
         .sidebar-header {
             display: flex;
@@ -165,12 +197,13 @@
             transition: all 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
             border: 1px solid transparent;
         }
-        .sidebar-menu li:hover { background: rgba(255,255,255,0.08); }
+        .sidebar-menu li:hover { background: rgba(98, 177, 255, 0.16); border-color: rgba(123, 191, 255, 0.32); }
         .sidebar-menu li.active {
-            background: rgba(222, 203, 178, 0.18);
-            border-color: rgba(222, 203, 178, 0.3);
-            color: #fff5e8;
+            background: linear-gradient(110deg, rgba(64, 159, 255, 0.42), rgba(72, 216, 214, 0.28));
+            border-color: rgba(128, 208, 255, 0.48);
+            color: #f2fbff;
             transform: translateX(2px);
+            box-shadow: 0 0 18px rgba(97, 181, 255, 0.34);
         }
         .sidebar-menu li.hidden { display: none; }
         .main-content {
@@ -180,9 +213,9 @@
             padding: 18px 22px 28px;
         }
         .topbar {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(15, 30, 58, 0.7);
             backdrop-filter: blur(8px);
-            border: 1px solid var(--border);
+            border: 1px solid rgba(106, 161, 255, 0.34);
             border-radius: var(--radius-lg);
             padding: 12px 16px;
             margin-bottom: 16px;
@@ -190,33 +223,68 @@
             align-items: center;
             justify-content: space-between;
             gap: 12px;
-            box-shadow: var(--shadow-xs);
+            box-shadow: 0 8px 28px rgba(8, 20, 45, 0.35);
         }
-        .topbar-title { font-size: 14px; color: var(--muted-foreground); }
+        .topbar-title { font-size: 14px; color: #b9d7ff; }
         .topbar-user {
             font-size: 13px;
             font-weight: 500;
-            color: var(--foreground);
-            background: var(--secondary);
-            border: 1px solid var(--border);
+            color: #e9f5ff;
+            background: rgba(37, 70, 120, 0.62);
+            border: 1px solid rgba(123, 185, 255, 0.38);
             border-radius: 999px;
             padding: 5px 10px;
         }
         .page { display: none; animation: fadeInUp 180ms ease-out; }
         .page.active { display: block; }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .page-header-main { min-width: 0; }
         .page-title {
             font-size: 24px;
             font-weight: 600;
-            margin: 8px 0 16px;
+            margin: 0;
             color: var(--foreground);
         }
+        .page-intro {
+            margin-top: 6px;
+            font-size: 13px;
+            color: var(--muted-foreground);
+        }
+        .page-tag {
+            font-size: 12px;
+            color: #cbebff;
+            border: 1px solid rgba(120, 181, 255, 0.46);
+            background: rgba(26, 60, 104, 0.58);
+            border-radius: 999px;
+            padding: 4px 10px;
+            white-space: nowrap;
+        }
         .card {
-            background: var(--card);
-            border: 1px solid var(--border);
+            background: linear-gradient(160deg, rgba(17, 34, 64, 0.72), rgba(10, 21, 41, 0.76));
+            border: 1px solid rgba(112, 174, 255, 0.28);
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-xs);
+            box-shadow: 0 12px 32px rgba(7, 18, 38, 0.46), inset 0 0 0 1px rgba(130, 190, 255, 0.09);
             padding: 18px;
             margin-bottom: 14px;
+            backdrop-filter: blur(10px);
+        }
+        .section-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .section-title-row h3 { margin-bottom: 0; }
+        .section-desc {
+            font-size: 12px;
+            color: var(--muted-foreground);
         }
         .card h3 {
             margin-bottom: 14px;
@@ -226,26 +294,40 @@
             letter-spacing: 0.01em;
         }
         .form-group {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
             gap: 12px;
             margin-bottom: 14px;
-            align-items: flex-end;
         }
-        .form-item { flex: 1; min-width: 180px; }
+        .form-item { min-width: 0; }
         .form-item textarea {
             resize: vertical;
             min-height: 80px;
         }
+        .actions-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 4px;
+        }
+        .actions-row .btn { min-width: 116px; }
+        .ex-desc-field { grid-column: span 2; }
+        .split-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+        .table-wrap {
+            border: 1px solid rgba(112, 174, 255, 0.26);
+            border-radius: var(--radius-md);
+            overflow: auto;
+            background: rgba(8, 19, 38, 0.75);
+        }
         .table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-top: 10px;
+            border-collapse: collapse;
+            margin-top: 0;
             font-size: 13px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            overflow: hidden;
         }
         .table th,
         .table td {
@@ -254,16 +336,17 @@
             border-bottom: 1px solid var(--border);
         }
         .table th {
-            background: #f3f0ea;
-            color: #4b433c;
+            background: rgba(30, 58, 101, 0.7);
+            color: #d4ecff;
             font-weight: 600;
             font-size: 12.5px;
             letter-spacing: 0.02em;
         }
-        .table tr:nth-child(even) { background: #fcfbf8; }
-        .table tr:hover { background: #f8f4ed; }
+        .table td { color: #deefff; border-bottom: 1px solid rgba(111, 170, 255, 0.17); }
+        .table tr:nth-child(even) { background: rgba(25, 45, 80, 0.42); }
+        .table tr:hover { background: rgba(50, 87, 143, 0.44); }
         .table tr:last-child td { border-bottom: none; }
-        .empty-tip { text-align: center; padding: 28px; color: var(--muted-foreground); }
+        .empty-tip { text-align: center; padding: 28px; color: #a8c8e9; }
         .cate-badge,
         .state-badge {
             display: inline-flex;
@@ -275,24 +358,25 @@
             font-weight: 500;
             border: 1px solid transparent;
         }
-        .cate-badge { color: #4c4339; background: #efe7dc; border-color: #e3d7c8; }
-        .state-in { background: #e8f2e9; color: #35553b; border-color: #cce1cf; }
-        .state-out { background: #f5ede0; color: #6f542f; border-color: #ead8bb; }
-        .state-lost, .state-human, .state-overdue, .state-abnormal { background: #f8e8e6; color: #7b3f3a; border-color: #efcbc6; }
-        .state-nature { background: #ececec; color: #4e4e4e; border-color: #d9d9d9; }
-        .state-paid { background: #e5f0e7; color: #30553c; border-color: #c6ddcc; }
-        .tip-text { font-size: 12px; color: var(--muted-foreground); margin-top: 8px; }
-        .danger-text { color: #7b3f3a; font-weight: 600; }
-        .success-text { color: #30553c; font-weight: 600; }
+        .cate-badge { color: #d9f1ff; background: rgba(66, 131, 221, 0.42); border-color: rgba(115, 182, 255, 0.45); }
+        .state-in { background: rgba(43, 187, 154, 0.28); color: #9affdb; border-color: rgba(94, 224, 191, 0.4); }
+        .state-out { background: rgba(253, 179, 80, 0.2); color: #ffdca2; border-color: rgba(255, 200, 118, 0.34); }
+        .state-lost, .state-human, .state-overdue, .state-abnormal { background: rgba(255, 106, 128, 0.23); color: #ffd2d9; border-color: rgba(255, 143, 160, 0.35); }
+        .state-nature { background: rgba(153, 168, 201, 0.22); color: #dfe7ff; border-color: rgba(180, 196, 229, 0.34); }
+        .state-paid { background: rgba(45, 201, 166, 0.2); color: #b0ffeb; border-color: rgba(100, 230, 202, 0.36); }
+        .tip-text { font-size: 12px; color: #a9caea; margin-top: 8px; }
+        .danger-text { color: #ffb5c2; font-weight: 600; }
+        .success-text { color: #adffe9; font-weight: 600; }
         .rule-card {
-            background: #f8f4ed;
-            border: 1px solid #e8dccb;
+            background: linear-gradient(160deg, rgba(22, 42, 75, 0.72), rgba(15, 30, 57, 0.78));
+            border: 1px solid rgba(108, 173, 255, 0.32);
             border-radius: var(--radius-md);
             padding: 12px 14px;
             margin-bottom: 14px;
-            color: #574f45;
+            color: #c7e6ff;
             font-size: 12.5px;
             line-height: 1.7;
+            box-shadow: inset 0 0 0 1px rgba(135, 198, 255, 0.12);
         }
         .search-wrapper { position: relative; }
         .search-dropdown {
@@ -303,15 +387,15 @@
             max-height: 240px;
             overflow-y: auto;
             z-index: 1000;
-            background: #fff;
-            border: 1px solid var(--border);
+            background: rgba(14, 28, 52, 0.96);
+            border: 1px solid rgba(117, 178, 255, 0.34);
             border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 12px 28px rgba(6, 17, 35, 0.54);
             animation: fadeInUp 160ms ease-out;
         }
         .search-dropdown-item {
             padding: 9px 12px;
-            border-bottom: 1px solid #f0ece6;
+            border-bottom: 1px solid rgba(99, 163, 247, 0.2);
             cursor: pointer;
             display: flex;
             justify-content: space-between;
@@ -319,31 +403,49 @@
             gap: 8px;
         }
         .search-dropdown-item:last-child { border-bottom: none; }
-        .search-dropdown-item:hover { background: #f8f4ed; }
-        .search-dropdown-item .book-name { font-weight: 500; color: var(--foreground); }
-        .search-dropdown-item .book-code { font-size: 12px; color: var(--muted-foreground); }
+        .search-dropdown-item:hover { background: rgba(58, 107, 175, 0.35); }
+        .search-dropdown-item .book-name { font-weight: 500; color: #e6f4ff; }
+        .search-dropdown-item .book-code { font-size: 12px; color: #9dc5ed; }
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes breatheGlow {
+            0%, 100% { opacity: 0.56; filter: blur(0); }
+            50% { opacity: 0.9; filter: blur(4px); }
+        }
+        @keyframes cardPulse {
+            0%, 100% { box-shadow: 0 24px 56px rgba(8, 17, 39, 0.52), inset 0 0 0 1px rgba(142, 202, 255, 0.12); }
+            50% { box-shadow: 0 24px 68px rgba(28, 84, 161, 0.42), inset 0 0 0 1px rgba(175, 220, 255, 0.18); }
         }
         @media (max-width: 1024px) {
             .sidebar { width: 200px; }
             .main-content { padding: 14px; }
             .page-title { font-size: 21px; }
-            .form-item { min-width: 150px; }
+            .page-header { align-items: flex-start; flex-direction: column; }
         }
         @media (max-width: 768px) {
+            body { overflow: auto; }
             .main-container { flex-direction: column; height: auto; min-height: 100vh; }
             .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--sidebar-border); }
             .sidebar-menu { flex-direction: row; flex-wrap: wrap; }
             .main-content { overflow: visible; }
             .card { padding: 14px; }
-            .table { display: block; overflow-x: auto; white-space: nowrap; }
+            .actions-row .btn { flex: 1; min-width: 130px; }
+            .ex-desc-field { grid-column: span 1; }
+            .table-wrap { overflow-x: auto; }
+            .table { min-width: 860px; }
             .topbar { margin-bottom: 12px; }
         }
     </style>
 </head>
 <body>
+<div class="bg-layer" aria-hidden="true">
+    <canvas id="particleCanvas"></canvas>
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+</div>
+<div class="app-layer">
 <div id="loginPage" class="login-container">
     <div class="login-box">
         <div class="login-title">校园图书管理系统</div>
@@ -390,9 +492,18 @@
         </div>
         <!-- 图书管理页 -->
         <div id="book" class="page">
-            <div class="page-title">图书信息管理</div>
+            <div class="page-header">
+                <div class="page-header-main">
+                    <div class="page-title">图书信息管理</div>
+                    <div class="page-intro">完成图书入库、批量导入与馆藏状态维护。</div>
+                </div>
+                <div class="page-tag">馆藏中心</div>
+            </div>
             <div class="card">
-                <h3>图书入库录入</h3>
+                <div class="section-title-row">
+                    <h3>图书入库录入</h3>
+                    <div class="section-desc">支持手动录入与 CSV 批量导入</div>
+                </div>
                 <div class="form-group">
                     <div class="form-item"><label>一级大类</label><select id="cateLevel1" onchange="changeCate1()"></select></div>
                     <div class="form-item">
@@ -406,7 +517,7 @@
                     <div class="form-item"><label>ISBN</label><input type="text" id="bookIsbn" placeholder="13位数字ISBN"></div>
                     <div class="form-item"><label>定价</label><input type="number" id="bookPrice" placeholder="图书原价（≥0）" min="0" step="0.01"></div>
                 </div>
-                <div class="form-group">
+                <div class="actions-row">
                     <button class="btn btn-success" onclick="addBook()">手动入库</button>
                     <button class="btn btn-primary" onclick="document.getElementById('csvBookFile').click()">CSV批量导入</button>
                     <input type="file" id="csvBookFile" accept=".csv" style="display: none;" onchange="importBookCSV(event)">
@@ -414,17 +525,31 @@
                 </div>
             </div>
             <div class="card">
-                <h3>馆藏图书列表</h3>
-                <table class="table"><thead><tr><th>馆藏唯一编码</th><th>分类号</th><th>ISBN</th><th>书名</th><th>作者</th><th>出版社</th><th>定价</th><th>当前借阅人</th><th>馆藏状态</th><th>备注</th><th>操作</th></tr></thead><tbody id="bookList"></tbody></table>
+                <div class="section-title-row">
+                    <h3>馆藏图书列表</h3>
+                    <div class="section-desc">可按状态查看当前馆藏可用情况</div>
+                </div>
+                <div class="table-wrap">
+                    <table class="table"><thead><tr><th>馆藏唯一编码</th><th>分类号</th><th>ISBN</th><th>书名</th><th>作者</th><th>出版社</th><th>定价</th><th>当前借阅人</th><th>馆藏状态</th><th>备注</th><th>操作</th></tr></thead><tbody id="bookList"></tbody></table>
+                </div>
             </div>
         </div>
 
         <!-- 人员管理页 -->
         <div id="user" class="page">
-            <div class="page-title">校园人员管理</div>
+            <div class="page-header">
+                <div class="page-header-main">
+                    <div class="page-title">校园人员管理</div>
+                    <div class="page-intro">统一导入师生信息并追踪借阅状态。</div>
+                </div>
+                <div class="page-tag">人员中心</div>
+            </div>
             <div class="card">
-                <h3>人员信息导入</h3>
-                <div class="form-group">
+                <div class="section-title-row">
+                    <h3>人员信息导入</h3>
+                    <div class="section-desc">导入后可直接用于账号登录与借阅身份校验</div>
+                </div>
+                <div class="actions-row">
                     <button class="btn btn-primary" onclick="document.getElementById('csvStudentFile').click()">导入学生信息CSV</button>
                     <input type="file" id="csvStudentFile" accept=".csv" style="display: none;" onchange="importStudentCSV(event)">
                     <button class="btn btn-success" onclick="document.getElementById('csvTeacherFile').click()">导入教师信息CSV</button>
@@ -434,16 +559,33 @@
                 </div>
                 <p class="tip-text danger-text">导入后学生/教师可用学号/工号登录，密码为身份证后6位</p>
             </div>
-            <div class="card"><h3>学生信息列表</h3><table class="table"><thead><tr><th>学号</th><th>姓名</th><th>性别</th><th>学院</th><th>学历</th><th>年级</th><th>专业</th><th>借阅状态</th></tr></thead><tbody id="studentList"></tbody></table></div>
-            <div class="card"><h3>教师信息列表</h3><table class="table"><thead><tr><th>工号</th><th>姓名</th><th>性别</th><th>学院</th><th>借阅状态</th></tr></thead><tbody id="teacherList"></tbody></table></div>
+            <div class="split-grid">
+                <div class="card">
+                    <div class="section-title-row"><h3>学生信息列表</h3><div class="section-desc">学生借阅资格状态一览</div></div>
+                    <div class="table-wrap"><table class="table"><thead><tr><th>学号</th><th>姓名</th><th>性别</th><th>学院</th><th>学历</th><th>年级</th><th>专业</th><th>借阅状态</th></tr></thead><tbody id="studentList"></tbody></table></div>
+                </div>
+                <div class="card">
+                    <div class="section-title-row"><h3>教师信息列表</h3><div class="section-desc">教师借阅资格状态一览</div></div>
+                    <div class="table-wrap"><table class="table"><thead><tr><th>工号</th><th>姓名</th><th>性别</th><th>学院</th><th>借阅状态</th></tr></thead><tbody id="teacherList"></tbody></table></div>
+                </div>
+            </div>
         </div>
 
         <!-- 借还管理页 -->
         <div id="borrow" class="page">
-            <div class="page-title">图书借还管理</div>
+            <div class="page-header">
+                <div class="page-header-main">
+                    <div class="page-title">图书借还管理</div>
+                    <div class="page-intro">处理借书、还书、续借和罚款缴纳流程。</div>
+                </div>
+                <div class="page-tag">流通中心</div>
+            </div>
             <div class="rule-card">📖 借阅规则：单次借阅期限30天，超时未还按每本每天0.1元收取罚款；有超时未还/未结清罚款的用户，禁止新的借书操作<br>🔄 续借规则：每本书最多续借2次，每次续借延长30天（从续借当天算起），逾期图书不可续借</div>
             <div class="card">
-                <h3>借还操作登记</h3>
+                <div class="section-title-row">
+                    <h3>借还操作登记</h3>
+                    <div class="section-desc">先检索图书，再提交借还操作</div>
+                </div>
                 <div class="form-group">
                     <div class="form-item"><label>馆藏编码</label><input type="text" id="borrowCode" placeholder="直接输入编码或通过书名自动填入"></div>
                     <div class="form-item search-wrapper">
@@ -453,34 +595,59 @@
                     </div>
                     <div class="form-item"><label>借阅人（学号/工号）</label><input type="text" id="borrowUser" placeholder="仅支持校内人员"></div>
                 </div>
-                <button class="btn btn-info" onclick="doBorrow()">借书登记</button>
-                <button class="btn btn-success" onclick="doReturn()">还书登记</button>
+                <div class="actions-row">
+                    <button class="btn btn-info" onclick="doBorrow()">借书登记</button>
+                    <button class="btn btn-success" onclick="doReturn()">还书登记</button>
+                </div>
             </div>
             <div class="card">
-                <h3 id="borrowListTitle">借还流水记录</h3>
-                <table class="table"><thead><tr><th>馆藏编码</th><th>书名</th><th>借阅人</th><th>借阅时间</th><th>最晚归还日期</th><th>归还时间</th><th>超时天数</th><th>应缴罚款</th><th>罚款状态</th><th>续借次数</th><th>操作</th></tr></thead><tbody id="borrowList"></tbody></table>
+                <div class="section-title-row">
+                    <h3 id="borrowListTitle">借还流水记录</h3>
+                    <div class="section-desc">按时间顺序展示借阅生命周期</div>
+                </div>
+                <div class="table-wrap">
+                    <table class="table"><thead><tr><th>馆藏编码</th><th>书名</th><th>借阅人</th><th>借阅时间</th><th>最晚归还日期</th><th>归还时间</th><th>超时天数</th><th>应缴罚款</th><th>罚款状态</th><th>续借次数</th><th>操作</th></tr></thead><tbody id="borrowList"></tbody></table>
+                </div>
             </div>
         </div>
 
         <!-- 异常处理页 -->
         <div id="exception" class="page">
-            <div class="page-title">图书损坏/丢失处理</div>
+            <div class="page-header">
+                <div class="page-header-main">
+                    <div class="page-title">图书损坏/丢失处理</div>
+                    <div class="page-intro">处理馆藏异常、赔付与重新入库流程。</div>
+                </div>
+                <div class="page-tag">异常中心</div>
+            </div>
             <div class="rule-card">⚠️ 处理规则：自然损坏无需赔偿，人为损坏按原价赔偿；丢失/损坏图书将被锁定，无法借出，完成处理后可注销编码重新入库</div>
             <div class="card">
-                <h3>损坏/丢失登记</h3>
+                <div class="section-title-row">
+                    <h3>损坏/丢失登记</h3>
+                    <div class="section-desc">登记异常后可执行注销或重新入库操作</div>
+                </div>
                 <div class="form-group">
                     <div class="form-item"><label>馆藏编码</label><input type="text" id="exCode" placeholder="输入异常图书编码"></div>
                     <div class="form-item"><label>异常类型</label><select id="exType"><option value="lost">图书丢失</option><option value="nature">自然损坏</option><option value="human">人为损坏</option></select></div>
                     <div class="form-item"><label>赔偿金额</label><input type="number" id="exPrice" placeholder="人为损坏/丢失必填"></div>
-                    <div class="form-item" style="flex:2;min-width:300px;"><label>损坏/丢失描述</label><textarea id="exDesc" placeholder="请详细描述异常情况"></textarea></div>
+                    <div class="form-item ex-desc-field"><label>损坏/丢失描述</label><textarea id="exDesc" placeholder="请详细描述异常情况"></textarea></div>
                 </div>
-                <button class="btn btn-warning" onclick="exceptionRegister()">异常登记</button>
-                <button class="btn btn-danger" onclick="cancelCode()">注销馆藏编码</button>
-                <button class="btn btn-success" onclick="reCreateCode()">重新生成编码重新入库</button>
+                <div class="actions-row">
+                    <button class="btn btn-warning" onclick="exceptionRegister()">异常登记</button>
+                    <button class="btn btn-danger" onclick="cancelCode()">注销馆藏编码</button>
+                    <button class="btn btn-success" onclick="reCreateCode()">重新生成编码重新入库</button>
+                </div>
             </div>
-            <div class="card"><h3>异常处理记录</h3><table class="table"><thead><tr><th>馆藏编码</th><th>异常类型</th><th>赔偿金额</th><th>异常描述</th><th>处理时间</th><th>处理人</th><th>处理状态</th></tr></thead><tbody id="exList"></tbody></table></div>
+            <div class="card">
+                <div class="section-title-row">
+                    <h3>异常处理记录</h3>
+                    <div class="section-desc">追踪异常处理闭环与责任人</div>
+                </div>
+                <div class="table-wrap"><table class="table"><thead><tr><th>馆藏编码</th><th>异常类型</th><th>赔偿金额</th><th>异常描述</th><th>处理时间</th><th>处理人</th><th>处理状态</th></tr></thead><tbody id="exList"></tbody></table></div>
+            </div>
         </div>
     </div>
+</div>
 </div>
 
 <script>
@@ -511,6 +678,76 @@ const CATE_DATA = {
 const BASE_URL = 'http://localhost:3000';
 let AUTH_TOKEN = null;
 let currentUser = null;
+let particleEngine = null;
+
+function initParticleBackground() {
+    const canvas = document.getElementById('particleCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const particles = [];
+    const maxParticles = window.innerWidth < 768 ? 36 : 72;
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
+    function spawnParticles() {
+        particles.length = 0;
+        for (let i = 0; i < maxParticles; i += 1) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2.8 + 0.8,
+                vx: (Math.random() - 0.5) * 0.22,
+                vy: (Math.random() - 0.5) * 0.22,
+                phase: Math.random() * Math.PI * 2
+            });
+        }
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const t = Date.now() * 0.0012;
+        for (const p of particles) {
+            const dx = mouseX - p.x;
+            const dy = mouseY - p.y;
+            const dist = Math.hypot(dx, dy) || 1;
+            const magnet = Math.max(0, 120 - dist) / 3600;
+            p.vx += (dx / dist) * magnet;
+            p.vy += (dy / dist) * magnet;
+
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vx *= 0.992;
+            p.vy *= 0.992;
+
+            if (p.x < -16) p.x = canvas.width + 16;
+            if (p.x > canvas.width + 16) p.x = -16;
+            if (p.y < -16) p.y = canvas.height + 16;
+            if (p.y > canvas.height + 16) p.y = -16;
+
+            const alpha = 0.16 + (Math.sin(t + p.phase) + 1) * 0.14;
+            ctx.beginPath();
+            ctx.fillStyle = `rgba(116, 196, 255, ${alpha.toFixed(3)})`;
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = 'rgba(92, 188, 255, 0.45)';
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        particleEngine = requestAnimationFrame(draw);
+    }
+
+    if (particleEngine) cancelAnimationFrame(particleEngine);
+    resize();
+    spawnParticles();
+    draw();
+
+    window.addEventListener('resize', () => { resize(); spawnParticles(); });
+    window.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+}
 
 async function api(url, method = 'GET', body = null) {
     const headers = { 'Content-Type': 'application/json' };
@@ -531,6 +768,7 @@ async function api(url, method = 'GET', body = null) {
 }
 
 window.onload = function () {
+    initParticleBackground();
     const token = localStorage.getItem('LIBRARY_TOKEN');
     const userStr = localStorage.getItem('LIBRARY_USER');
     if (token && userStr) { AUTH_TOKEN = token; currentUser = JSON.parse(userStr); showMainPage(); }
@@ -547,7 +785,7 @@ function showMainPage() {
     document.getElementById('mainPage').style.display = 'flex';
     document.getElementById('topbarUser').textContent = `${currentUser.name || currentUser.no} · ${roleText(currentUser.role)}`;
     initCateSelect();
-    const menus = { student:['borrow'], teacher:['book','borrow'], admin:['book','user','borrow','exception'] };
+    const menus = { student:['borrow'], teacher:['borrow'], admin:['book','user','borrow','exception'] };
     document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.add('hidden'));
     menus[currentUser.role].forEach(id => document.getElementById('menu-'+id).classList.remove('hidden'));
     switchPage(menus[currentUser.role][0]);
@@ -590,7 +828,7 @@ function doLogout() {
 }
 
 function switchPage(pageId) {
-    const allowed = { student:['borrow'], teacher:['book','borrow'], admin:['book','user','borrow','exception'] }[currentUser.role];
+    const allowed = { student:['borrow'], teacher:['borrow'], admin:['book','user','borrow','exception'] }[currentUser.role];
     if (!allowed.includes(pageId)) return alert('无权限访问');
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(pageId).classList.add('active');
